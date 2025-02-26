@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Vacas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        svg {
+            width: 400px;
+            height: 400px;
+            border: 1px solid black;
+        }
+        .info-box {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid black;
+            padding: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<h2>Gráfico de Controle de Vacas</h2>
+
+<!-- SVG para exibir o gráfico -->
+<svg id="grafico" viewBox="-100 -100 200 200"></svg>
+
+<!-- Caixa de informações -->
+<div id="info" class="info-box"></div>
+
+<script>
+    const vacas = [
+        { id: 1, nome: "Vaca 1", status: "Prenhe", producao: "20L/dia", x: -40, y: 30 },
+        { id: 2, nome: "Vaca 2", status: "Vazia", producao: "15L/dia", x: 30, y: -50 },
+        { id: 3, nome: "Vaca 3", status: "Lactação", producao: "25L/dia", x: -20, y: -40 },
+        { id: 4, nome: "Vaca 4", status: "Seca", producao: "0L/dia", x: 50, y: 20 }
+    ];
+
+    const svg = document.getElementById("grafico");
+    const infoBox = document.getElementById("info");
+
+    // Desenhar círculos para representar as vacas
+    vacas.forEach(vaca => {
+        let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", vaca.x);
+        circle.setAttribute("cy", vaca.y);
+        circle.setAttribute("r", 8);
+        circle.setAttribute("fill", "blue");
+        circle.setAttribute("stroke", "black");
+        circle.setAttribute("stroke-width", "1");
+        circle.style.cursor = "pointer";
+
+        // Evento de clique para exibir informações
+        circle.addEventListener("click", (event) => {
+            infoBox.style.display = "block";
+            infoBox.style.left = (event.pageX + 10) + "px";
+            infoBox.style.top = (event.pageY + 10) + "px";
+            infoBox.innerHTML = `
+                <strong>${vaca.nome}</strong><br>
+                Status: ${vaca.status}<br>
+                Produção: ${vaca.producao}
+            `;
+        });
+
+        svg.appendChild(circle);
+    });
+
+    // Ocultar informações ao clicar fora
+    document.addEventListener("click", (event) => {
+        if (!event.target.closest("circle")) {
+            infoBox.style.display = "none";
+        }
+    });
+</script>
+
+</body>
+</html>
