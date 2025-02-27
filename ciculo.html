@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Rosca</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="440" height="440"></canvas>
+
+    <script>
+        function drawWedge(ctx, centerX, centerY, outerRadius, startAngle, endAngle, color, width) {
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+            ctx.arc(centerX, centerY, outerRadius - width, endAngle, startAngle, true);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawDonutChart() {
+            const canvas = document.getElementById("myCanvas");
+            const ctx = canvas.getContext("2d");
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const outerRadius = 180;  // Tamanho da rosca
+            const innerRadius = outerRadius * 0.95;  // Criando o "buraco"
+
+            /*
+			drawWedge(ctx, centerX, centerY, outerRadius, (187 * Math.PI) / 180, (270 * Math.PI) / 180, "red", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, (110 * Math.PI) / 180, (187 * Math.PI) / 180, "yellow", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, (-30 * Math.PI) / 180, (110 * Math.PI) / 180, "blue", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, (-90 * Math.PI) / 180, (-30 * Math.PI) / 180, "green", outerRadius - innerRadius);
+			*/
+
+			drawWedge(ctx, centerX, centerY, outerRadius, (90 * Math.PI) / 180, ((90+83) * Math.PI) / 180, "red", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, ((90+83) * Math.PI) / 180, ((90+83+77) * Math.PI) / 180, "yellow", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, ((90+83+77) * Math.PI) / 180, ((90-60) * Math.PI) / 180, "blue", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, ((90-60) * Math.PI) / 180, (90 * Math.PI) / 180, "green", outerRadius - innerRadius);
+			}
+ //Centralizar no meio do canvas
+
+drawDonutChart();
+
+  const canvas = document.getElementById("myCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // Centralizar no meio do canvas
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const scale = 180; // Ajuste para converter os raios em pixels
+
+  function drawCircle(x, y, radius, color, lineWidth) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius * scale, 0, 2 * Math.PI);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+
+  drawCircle(centerX, centerY, 0.92, "black", 2);
+  drawCircle(centerX, centerY, 0.25, "black", 2);
+  drawCircle(centerX, centerY, 0.15, "black", 2);
+  drawCircle(centerX, centerY, 0.945, "black", 2);
+  drawCircle(centerX, centerY, 1, "black", 2);
+
+const angleAjuste = 0; // Defina o ajuste de ângulo conforme necessário
+  const totalDivisions = 72;
+  const angleStep = (2 * Math.PI) / totalDivisions; // Ângulo entre cada divisão
+
+  function drawLine(x1, y1, x2, y2, color, lineWidth) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+
+  for (let i = 0; i < totalDivisions; i++) {
+    const angle = i * angleStep;
+
+    const x1 = centerX + 0.92 * scale * Math.cos(angle);
+    const y1 = centerY + 0.92 * scale * Math.sin(angle);
+    const x2 = centerX + 0.25 * scale * Math.cos(angle);
+    const y2 = centerY + 0.25 * scale * Math.sin(angle);
+    const x3 = centerX + 0.15 * scale * Math.cos(angle);
+    const y3 = centerY + 0.15 * scale * Math.sin(angle);
+
+    if (i % 6 === 0) {
+      drawLine(x1, y1, x3, y3, "black", 1.5); // Linhas mais grossas para múltiplos de 6
+    } else {
+      drawLine(x1, y1, x2, y2, "gray", 0.5); // Linhas normais
+    }
+  }
+  const mes_atual=5
+  const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+  const angleAdjust = Math.PI / 2 + (mes_atual -1) * Math.PI / 6; // Ajuste para começar em cima (90º)
+  const monthAngles = 2 * Math.PI / 12; // Ângulo entre os meses
+
+  function drawText(text, x, y, fontSize, fontWeight) {
+    ctx.font = `${fontWeight} ${fontSize}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+	ctx.fillStyle = "black";
+    ctx.fillText(text, x, y);
+  }
+
+  for (let i = 0; i < months.length; i++) {
+    const angle = (months.length-i-1) * monthAngles + angleAdjust;
+
+    const x1 = centerX + 0.92 * scale * Math.cos(angle);
+    const y1 = centerY + 0.92 * scale * Math.sin(angle);
+
+    const x2 = centerX + 0.2 * scale * Math.cos(angle + monthAngles / 2);
+    const y2 = centerY + 0.2 * scale * Math.sin(angle + monthAngles / 2);
+
+    const x3 = centerX + 0.15 * scale * Math.cos(angle);
+    const y3 = centerY + 0.15 * scale * Math.sin(angle);
+
+    // Desenha os textos dos meses
+    drawText(months[i], x2, y2, 9, "bold");
+
+    // Opcional: Linhas radiais para marcação
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x3, y3);
+    ctx.strokeStyle = "gray";
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+  
+  function drawMark(angleDeg, text1, text2, text3) {
+    const angle = (angleDeg * Math.PI) / 180;
+
+    drawLine(angle, 0.95, 1.0, "black", 1.5);
+    drawText(text1, centerX + 1.08 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 12);
+    if (text2) drawText(text2, centerX + 1.05 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 12);
+    if (text3) drawText(text3, centerX + 1.05 * scale * Math.cos(angle), centerY + 0.9 * scale * Math.sin(angle), 12);
+  }
+
+  drawMark(173, "83", "", "cobertura");
+  drawMark(194, "retorno", "ao cio", "21");
+  drawMark(213, "palpar", "40", "");
+  drawMark(233, "palpar", "60", "");
+	
+  drawText("secar", centerX + 1.06 * scale * Math.cos(-30 * Math.PI / 180), centerY + 1.06 * scale * Math.sin(-30 * Math.PI / 180), 12);
+  drawText("Hoje", centerX, centerY + 1.03 * scale, 12, true);
+  drawText("Parição", centerX, centerY + 1.07 * scale, 12, true);
+
+
+  // Texto central
+  drawText("Faz", centerX, centerY + 0.08 * scale, 14, true);
+  drawText("Estiva", centerX, centerY, 14, true);
+  drawText("27 / Fev", centerX, centerY - 0.08 * scale, 12, true);
+        
+    </script>
+</body>
+</html>
