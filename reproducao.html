@@ -283,7 +283,149 @@ function gerarTabela() {
 
 window.onload = gerarTabela;
 
- 
+/*
+const vacas = [
+    { Brinco: "123", Tipo: "Vaca", Fase: "Lactação", Status: "Vazia", Pparto: "2024-10-15" },
+    { Brinco: "124", Tipo: "Novilha", Fase: "Seca", Status: "Prenhe", Pparto: "2024-11-20" },
+    { Brinco: "125", Tipo: "Vaca", Fase: "Lactação", Status: "Coberta", Pparto: "2024-09-10" },
+    { Brinco: "126", Tipo: "Vaca", Fase: "Lactação", Status: "Prenhe", Pparto: "2024-08-05" },
+    { Brinco: "127", Tipo: "Vaca", Fase: "Seca", Status: "Prenhe", Pparto: "2024-12-01" }
+];
+*/
+// Cores para cada tipo de vaca
+const cores = {
+    "VacaLactacaoVazia": "red",
+    "VacaLactacaoCoberta": "yellow",
+    "VacaLactacaoPrenhe": "blue",
+    "VacaSecaPrenhe": "green",
+    "NovilhaSecaPrenhe": "pink",
+    "NovilhaSecaCoberta": "lightpink"
+};
+
+// Função para calcular o ângulo com base na data
+function calcularAngulo(data) {
+    const [ano, mes, dia] = data.split("-").map(Number);
+    const diaCorrigido = Math.min(dia, 30); // Limita o máximo a 30 dias
+    return ((mes - 1) * 30 + diaCorrigido) * (Math.PI / 180); // Converte para radianos
+}
+
+// Configuração do Canvas
+//const canvas = document.getElementById("myCanvas");
+//const ctx = canvas.getContext("2d");
+//const centroX = canvas.width / 2;
+//const centroY = canvas.height / 2;
+//const raioInicial = 180; // Raio inicial onde começam os círculos
+raioInicial=180; //Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
+const raioReducao = 4; // Quanto reduz o raio a cada tentativa circuloRaio (15) raioReducao (10)
+const circuloRaio = 8; // Raio do círculo das vacas
+
+let vacasPosicionadas = [];
+
+// Função para verificar se há sobreposição
+function verificaSobreposicao(x, y) {
+    for (let v of vacasPosicionadas) {
+        let dx = x - v.x;
+        let dy = y - v.y;
+        let distancia = Math.sqrt(dx * dx + dy * dy);
+        if (distancia < circuloRaio * 2) return true; // Se sobrepõe, retorna verdadeiro
+    }
+    return false;
+}
+
+// Função para desenhar os círculos das vacas
+
+/*---
+varrer vacas
+-pegar cor
+-pegar angulo
+-pegar brinco
+-pegar info
+Brinco: "97", 
+Nome: "Uberlandia",
+Tipo: "Vaca", 
+Uparto: "22/1/2024",
+Bcria: "4011", 
+Fase: "Lactacao", 
+Dcorb: "15/11/2024", 
+Status: "Prenhe", 
+Pparto: "22/8/2025", 
+Dsecagen: "", 
+Obs: "" },
+
+----*/
+function getVacas(){
+	let grafVacas=[];
+	for (let vaca of vacas) {
+		const categoria = `${vaca.Tipo}${vaca.Fase}${vaca.Status}`;
+		if(cores[categoria]){
+			const cor = cores[categoria];
+			let dataPos;
+			if (vaca.Status === "Prenhe" || vaca.Status === "Coberta") {
+				dataPos = vaca.Pparto;
+			} else {
+				dataPos = vaca.Uparto;
+			}
+			//const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
+			const [diaVaca,mesVaca,anoVaca] = dataPos.split("/").map(Number);
+			let anguloVaca=(mesVaca -1) * Math.PI / 6 + (diaVaca-1)* Math.PI / 180 + angleAdjust;
+			if (vaca.Brinco === "2204"){
+				alert(vaca.Fase )
+			}
+			grafVacas.push({brinco: vaca.Brinco, cor: cor,angle:anguloVaca,info: ""});
+		}
+	}
+	return grafVacas;
+}
+
+function posicionarVacas(){
+	let infoVacas=getVacas();
+	let raioAtual = 150; // 0.92 * 180 - 15  circuloRaio (15) raioReducao (8)
+	let flag=1;
+	let vacasNaoPosicionadas = [];
+	let vacasOk=[];
+	while(flag === 1 && raioAtual > 40){
+		for (let vaca of infoVacas){
+			if(!vacasOk.includes(vaca.brinco)){
+				const cor = vaca.cor;
+				const angulo = vaca.angle;
+				//const centerX = canvas.width / 2;
+				//const centerY = canvas.height / 2;
+				const x = centerX + raioAtual * Math.cos(angulo);
+				const y = centerY + raioAtual * Math.sin(angulo);
+
+				if (!verificaSobreposicao(x, y)) {
+					// Adiciona vaca ao array de posicionadas
+					vacasPosicionadas.push({ x, y, brinco: vaca.brinco, cor });
+					vacasOk.push(vaca.brinco);
+				}
+			}
+		}
+		if(infoVacas.length === vacasPosicionadas){
+			flag=0;
+		}
+		raioAtual=raioAtual-raioReducao
+	}
+
+    // Desenha os círculos no canvas
+    for (let v of vacasPosicionadas) {
+
+        ctx.beginPath();
+        ctx.arc(v.x, v.y, circuloRaio, 0, 2 * Math.PI);
+        ctx.fillStyle = v.cor;
+        ctx.fill();
+        //ctx.stroke();
+
+        ctx.fillStyle = "black";
+        ctx.font = "9px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(v.brinco, v.x, v.y);
+
+    }
+}
+
+// Chama a função para desenhar
+posicionarVacas();
     </script>
 </body>
 </html>
