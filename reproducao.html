@@ -207,20 +207,47 @@ const angleAjuste = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* M
 
 
 const vacas = [
-  { Brinco: "123", Tipo: "Vaca", Uparto: "01/01/2024", Fase: "Lactação", Dcorb: "15/01/2024", Status: "Prenhe", Pparto: "15/10/2024", Dsecagen: "15/08/2024" },
-  { Brinco: "124", Tipo: "Novilha", Uparto: "05/02/2024", Fase: "Seca", Dcorb: "20/02/2024", Status: "Vazia", Pparto: "20/11/2024", Dsecagen: "20/09/2024" }
+  //{ Brinco: "123", Tipo: "Vaca", Uparto: "01/01/2024", Fase: "Lactação", Dcorb: "15/01/2024", Status: "Prenhe", Pparto: "15/10/2024", Dsecagen: "15/08/2024" },
+  //{ Brinco: "124", Tipo: "Novilha", Uparto: "05/02/2024", Fase: "Seca", Dcorb: "20/02/2024", Status: "Vazia", Pparto: "20/11/2024", Dsecagen: "20/09/2024" }
+{ Brinco: "343", Nome: "Baroneza",Tipo: "Vaca", Uparto: "5/2/2024",Bcria: "4022", Fase: "Lactacao", Dcorb: "27/1/2025", Status: "Coberta", Pparto: "3/11/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "308", Nome: "Loteria",Tipo: "Vaca", Uparto: "15/10/2024",Bcria: "4101", Fase: "Lactacao", Dcorb: "27/1/2025", Status: "Coberta", Pparto: "3/11/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "22", Nome: "Chumbada",Tipo: "Vaca", Uparto: "17/10/2024",Bcria: "4102", Fase: "Lactacao", Dcorb: "27/1/2025", Status: "Coberta", Pparto: "3/11/2025", Dsecagen: "", Obs: "Descarte" },
+{ Brinco: "341", Nome: "Plata",Tipo: "Vaca", Uparto: "28/7/2024",Bcria: "4071", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "230", Nome: "Boneca",Tipo: "Vaca", Uparto: "15/8/2024",Bcria: "4081", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "228", Nome: "Bolinha",Tipo: "Vaca", Uparto: "15/9/2024",Bcria: "4091", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "210", Nome: "Fanta",Tipo: "Vaca", Uparto: "5/11/2024",Bcria: "4111", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "307", Nome: "Bela",Tipo: "Vaca", Uparto: "1/8/2024",Bcria: "Ad-4112", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "Abortou" },
+{ Brinco: "301", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "302", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "209", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "208", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "304", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "2205", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "306", Nome: "Negrinha",Tipo: "Vaca", Uparto: "21/10/2023",Bcria: "3101", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "305", Nome: "Torneira",Tipo: "Vaca", Uparto: "26/12/2023",Bcria: "3122", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "Descarte" },
+{ Brinco: "97", Nome: "Uberlandia",Tipo: "Vaca", Uparto: "22/1/2024",Bcria: "4011", Fase: "Lactacao", Dcorb: "15/11/2024", Status: "Prenhe", Pparto: "22/8/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "342", Nome: "Moranga",Tipo: "Vaca", Uparto: "29/1/2024",Bcria: "4012", Fase: "Lactacao", Dcorb: "17/8/2024", Status: "Prenhe", Pparto: "24/5/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "235", Nome: "Chumbada",Tipo: "Vaca", Uparto: "5/2/2024",Bcria: "4021", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "309", Nome: "Estrela",Tipo: "Vaca", Uparto: "25/6/2024",Bcria: "4061", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "25", Nome: "Vitoria",Tipo: "Vaca", Uparto: "12/9/2023",Bcria: "3091", Fase: "Seca", Dcorb: "16/10/2024", Status: "Prenhe", Pparto: "23/7/2025", Dsecagen: "1/12/2024", Obs: "" },
+{ Brinco: "246", Nome: "Acai",Tipo: "Vaca", Uparto: "12/12/2023",Bcria: "3121", Fase: "Seca", Dcorb: "15/11/2024", Status: "Prenhe", Pparto: "22/8/2025", Dsecagen: "20/2/2025", Obs: "" },
+{ Brinco: "2204", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "225", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "18/6/2024", Status: "Prenhe", Pparto: "25/3/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "303", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "15/11/2024", Status: "Prenhe", Pparto: "22/8/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "2203", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+
 ];
 
 function gerarTabela() {
   const table = document.createElement("table");
-  table.style.width = "60%";
+  table.style.width = "70%";
   table.style.borderCollapse = "collapse";
   table.style.marginTop = "20px";
   table.border = "1";
   table.classList.add("border-collapse", "border", "border-black", "w-full");
 
-  //const headers = ["Brinco", "Tipo", "Último Parto", "Fase", "Data Cobertura", "Status", "Previsão Parto", "Data Secagem"];
-  const headers = ["Brinco", "Tipo", "U.Parto", "Fase", "D.Cobertura", "Status", "P.Parto", "D.Secagem"];
+  const headers = ["Brinco", "Nome", "Tipo", "Ultimo Parto", "Brinco Cria","Fase", "Data Cobertura", "Status", "Previsão Parto", "Data Secagem","Observacao"];
+  //const headers = ["Brinco", "Tipo", "U.Parto", "Fase", "D.Cobertura", "Status", "P.Parto", "D.Secagem"];
 
   // Cria o cabeçalho
   const thead = document.createElement("thead");
