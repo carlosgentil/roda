@@ -6,9 +6,15 @@
     <title>Gráfico de Rosca</title>
 </head>
 <body>
-    <canvas id="myCanvas" width="440" height="440"></canvas>
+    <canvas id="myCanvas" width="450" height="450"></canvas>
+	<div id="tabela-vacas"></div>
 
     <script>
+	
+	const hoje = new Date();
+	const diaAtual = hoje.getDate(); // Dia atual (1-31)
+	const mesAtual = hoje.getMonth() + 1; // Mês atual (0-11, por isso soma +1)
+
         function drawWedge(ctx, centerX, centerY, outerRadius, startAngle, endAngle, color, width) {
             ctx.beginPath();
             ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
@@ -65,7 +71,9 @@ drawDonutChart();
   drawCircle(centerX, centerY, 0.945, "black", 2);
   drawCircle(centerX, centerY, 1, "black", 2);
 
-const angleAjuste = 0; // Defina o ajuste de ângulo conforme necessário
+let diaAtualA = diaAtual > 30 ? 30 : diaAtual;
+
+const angleAjuste = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180; // Ajuste para começar em cima (90º); // Defina o ajuste de ângulo conforme necessário
   const totalDivisions = 72;
   const angleStep = (2 * Math.PI) / totalDivisions; // Ângulo entre cada divisão
 
@@ -79,7 +87,7 @@ const angleAjuste = 0; // Defina o ajuste de ângulo conforme necessário
   }
 
   for (let i = 0; i < totalDivisions; i++) {
-    const angle = i * angleStep;
+    const angle = i * angleStep + angleAjuste;
 
     const x1 = centerX + 0.92 * scale * Math.cos(angle);
     const y1 = centerY + 0.92 * scale * Math.sin(angle);
@@ -94,9 +102,10 @@ const angleAjuste = 0; // Defina o ajuste de ângulo conforme necessário
       drawLine(x1, y1, x2, y2, "gray", 0.5); // Linhas normais
     }
   }
-  const mes_atual=5
+  //const mes_atual=5
+  
   const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-  const angleAdjust = Math.PI / 2 + (mes_atual -1) * Math.PI / 6; // Ajuste para começar em cima (90º)
+  const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180; // Ajuste para começar em cima (90º)
   const monthAngles = 2 * Math.PI / 12; // Ângulo entre os meses
 
   function drawText(text, x, y, fontSize, fontWeight) {
@@ -134,27 +143,147 @@ const angleAjuste = 0; // Defina o ajuste de ângulo conforme necessário
   function drawMark(angleDeg, text1, text2, text3) {
     const angle = (angleDeg * Math.PI) / 180;
 
-    drawLine(angle, 0.95, 1.0, "black", 1.5);
+    drawLine2(angle, 0.95, 1.0, "black", 1.5);
+	
+	if(text1 == "cobertura"){
+		drawText(text1, centerX + 1.14 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 12);
+		drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.46 * scale * Math.sin(angle), 12);
+	} else if(text1 == "retorno") { 
+		drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.16 * scale * Math.sin(angle), 12);
+		drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.95 * scale * Math.sin(angle), 12);
+		drawText(text3, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.75 * scale * Math.sin(angle), 12);
+	} else if(text2 == "40 dias") {
+		drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.10 * scale * Math.sin(angle), 12);
+		drawText(text2, centerX + 1.16 * scale * Math.cos(angle), centerY + 0.97 * scale * Math.sin(angle), 12);
+	} else if(text2 == "60 dias") {
+		drawText(text1, centerX + 1.18 * scale * Math.cos(angle), centerY + 1.08 * scale * Math.sin(angle), 12);
+		drawText(text2, centerX + 1.26 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 12);
+	} else {
     drawText(text1, centerX + 1.08 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 12);
     if (text2) drawText(text2, centerX + 1.05 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 12);
     if (text3) drawText(text3, centerX + 1.05 * scale * Math.cos(angle), centerY + 0.9 * scale * Math.sin(angle), 12);
+	}
+  }
+  drawLine2(-90 * Math.PI / 180 , 0.95, 1.0, "black", 1.5);
+  drawLine2(-60 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  drawLine2(-30 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  drawLine2( 0 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  drawLine2( 30 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  drawLine2( 60 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  drawLine2( 90 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  drawLine2( 120 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  drawLine2( 150 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+  
+  
+ function drawLine2(angle, length1, length2, color, lineWidth) {
+    const x1 = centerX + length1 * scale * Math.cos(angle);
+    const y1 = centerY + length1 * scale * Math.sin(angle);
+    const x2 = centerX + length2 * scale * Math.cos(angle);
+    const y2 = centerY + length2 * scale * Math.sin(angle);
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
   }
 
-  drawMark(173, "83", "", "cobertura");
-  drawMark(194, "retorno", "ao cio", "21");
-  drawMark(213, "palpar", "40", "");
-  drawMark(233, "palpar", "60", "");
+  drawMark(173, "cobertura", "83 dias", "");
+  drawMark(194, "retorno", "ao cio", "21 dias");
+  drawMark(213, "palpar", "40 dias", "");
+  drawMark(233, "palpar", "60 dias", "");
 	
-  drawText("secar", centerX + 1.06 * scale * Math.cos(-30 * Math.PI / 180), centerY + 1.06 * scale * Math.sin(-30 * Math.PI / 180), 12);
-  drawText("Hoje", centerX, centerY + 1.03 * scale, 12, true);
-  drawText("Parição", centerX, centerY + 1.07 * scale, 12, true);
+  drawText("secar", centerX + 1.08 * scale * Math.cos(30 * Math.PI / 180), centerY + 1.06 * scale * Math.sin(30 * Math.PI / 180), 12);
+  drawText("Hoje", centerX, centerY + 1.05 * scale, 12, true);
+  drawText("Parição", centerX, centerY + 1.10 * scale, 12, true);
 
 
   // Texto central
-  drawText("Faz", centerX, centerY + 0.08 * scale, 14, true);
+  drawText("Faz", centerX, centerY - 0.08 * scale, 14, true);
   drawText("Estiva", centerX, centerY, 14, true);
-  drawText("27 / Fev", centerX, centerY - 0.08 * scale, 12, true);
-        
+  drawText(diaAtual + " / " + months[mesAtual-1], centerX, centerY + 0.08 * scale, 12, true);
+ 
+
+
+const vacas = [
+  //{ Brinco: "123", Tipo: "Vaca", Uparto: "01/01/2024", Fase: "Lactação", Dcorb: "15/01/2024", Status: "Prenhe", Pparto: "15/10/2024", Dsecagen: "15/08/2024" },
+  //{ Brinco: "124", Tipo: "Novilha", Uparto: "05/02/2024", Fase: "Seca", Dcorb: "20/02/2024", Status: "Vazia", Pparto: "20/11/2024", Dsecagen: "20/09/2024" }
+{ Brinco: "343", Nome: "Baroneza",Tipo: "Vaca", Uparto: "5/2/2024",Bcria: "4022", Fase: "Lactacao", Dcorb: "27/1/2025", Status: "Coberta", Pparto: "3/11/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "308", Nome: "Loteria",Tipo: "Vaca", Uparto: "15/10/2024",Bcria: "4101", Fase: "Lactacao", Dcorb: "27/1/2025", Status: "Coberta", Pparto: "3/11/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "22", Nome: "Chumbada",Tipo: "Vaca", Uparto: "17/10/2024",Bcria: "4102", Fase: "Lactacao", Dcorb: "27/1/2025", Status: "Coberta", Pparto: "3/11/2025", Dsecagen: "", Obs: "Descarte" },
+{ Brinco: "341", Nome: "Plata",Tipo: "Vaca", Uparto: "28/7/2024",Bcria: "4071", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "230", Nome: "Boneca",Tipo: "Vaca", Uparto: "15/8/2024",Bcria: "4081", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "228", Nome: "Bolinha",Tipo: "Vaca", Uparto: "15/9/2024",Bcria: "4091", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "210", Nome: "Fanta",Tipo: "Vaca", Uparto: "5/11/2024",Bcria: "4111", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "307", Nome: "Bela",Tipo: "Vaca", Uparto: "1/8/2024",Bcria: "Ad-4112", Fase: "Lactacao", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "Abortou" },
+{ Brinco: "301", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "302", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "209", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "208", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "304", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "2205", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "", Status: "Vazia", Pparto: "", Dsecagen: "", Obs: "" },
+{ Brinco: "306", Nome: "Negrinha",Tipo: "Vaca", Uparto: "21/10/2023",Bcria: "3101", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "305", Nome: "Torneira",Tipo: "Vaca", Uparto: "26/12/2023",Bcria: "3122", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "Descarte" },
+{ Brinco: "97", Nome: "Uberlandia",Tipo: "Vaca", Uparto: "22/1/2024",Bcria: "4011", Fase: "Lactacao", Dcorb: "15/11/2024", Status: "Prenhe", Pparto: "22/8/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "342", Nome: "Moranga",Tipo: "Vaca", Uparto: "29/1/2024",Bcria: "4012", Fase: "Lactacao", Dcorb: "17/8/2024", Status: "Prenhe", Pparto: "24/5/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "235", Nome: "Chumbada",Tipo: "Vaca", Uparto: "5/2/2024",Bcria: "4021", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "309", Nome: "Estrela",Tipo: "Vaca", Uparto: "25/6/2024",Bcria: "4061", Fase: "Lactacao", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "25", Nome: "Vitoria",Tipo: "Vaca", Uparto: "12/9/2023",Bcria: "3091", Fase: "Seca", Dcorb: "16/10/2024", Status: "Prenhe", Pparto: "23/7/2025", Dsecagen: "1/12/2024", Obs: "" },
+{ Brinco: "246", Nome: "Acai",Tipo: "Vaca", Uparto: "12/12/2023",Bcria: "3121", Fase: "Seca", Dcorb: "15/11/2024", Status: "Prenhe", Pparto: "22/8/2025", Dsecagen: "20/2/2025", Obs: "" },
+{ Brinco: "2204", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "225", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "18/6/2024", Status: "Prenhe", Pparto: "25/3/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "303", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "15/11/2024", Status: "Prenhe", Pparto: "22/8/2025", Dsecagen: "", Obs: "" },
+{ Brinco: "2203", Nome: "",Tipo: "Novilha", Uparto: "",Bcria: "", Fase: "Seca", Dcorb: "15/12/2024", Status: "Prenhe", Pparto: "21/9/2025", Dsecagen: "", Obs: "" },
+
+];
+
+function gerarTabela() {
+  const table = document.createElement("table");
+  table.style.width = "70%";
+  table.style.borderCollapse = "collapse";
+  table.style.marginTop = "20px";
+  table.border = "1";
+  table.classList.add("border-collapse", "border", "border-black", "w-full");
+
+  const headers = ["Brinco", "Nome", "Tipo", "Ultimo Parto", "Brinco Cria","Fase", "Data Cobertura", "Status", "Previsão Parto", "Data Secagem","Observacao"];
+  //const headers = ["Brinco", "Tipo", "U.Parto", "Fase", "D.Cobertura", "Status", "P.Parto", "D.Secagem"];
+
+  // Cria o cabeçalho
+  const thead = document.createElement("thead");
+  const trHead = document.createElement("tr");
+
+  headers.forEach(header => {
+    const th = document.createElement("th");
+    th.innerText = header;
+    th.classList.add("border", "border-black", "p-2", "text-center");
+	th.style.fontSize = "12px"; // Fonte menor
+    trHead.appendChild(th);
+  });
+  thead.appendChild(trHead);
+  table.appendChild(thead);
+
+  // Cria o corpo da tabela
+  const tbody = document.createElement("tbody");
+  vacas.forEach(vaca => {
+    const tr = document.createElement("tr");
+    Object.values(vaca).forEach(value => {
+      const td = document.createElement("td");
+      td.innerText = value;
+      td.classList.add("border", "border-black", "p-2", "text-center");
+	  td.style.fontSize = "12px"; // Fonte menor para o corpo
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+
+  document.getElementById("tabela-vacas").appendChild(table);
+}
+
+window.onload = gerarTabela;
+
+ 
     </script>
 </body>
 </html>
