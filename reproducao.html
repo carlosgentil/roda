@@ -7,6 +7,7 @@
 </head>
 <body>
     <canvas id="myCanvas" width="450" height="450"></canvas>
+	<div id="tabela-vacas"></div>
 
     <script>
 	
@@ -202,7 +203,60 @@ const angleAjuste = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* M
   drawText("Faz", centerX, centerY - 0.08 * scale, 14, true);
   drawText("Estiva", centerX, centerY, 14, true);
   drawText(diaAtual + " / " + months[mesAtual-1], centerX, centerY + 0.08 * scale, 12, true);
-        
+ 
+
+
+const vacas = [
+  { Brinco: "123", Tipo: "Vaca", Uparto: "01/01/2024", Fase: "Lactação", Dcorb: "15/01/2024", Status: "Prenhe", Pparto: "15/10/2024", Dsecagen: "15/08/2024" },
+  { Brinco: "124", Tipo: "Novilha", Uparto: "05/02/2024", Fase: "Seca", Dcorb: "20/02/2024", Status: "Vazia", Pparto: "20/11/2024", Dsecagen: "20/09/2024" }
+];
+
+function gerarTabela() {
+  const table = document.createElement("table");
+  table.style.width = "60%";
+  table.style.borderCollapse = "collapse";
+  table.style.marginTop = "20px";
+  table.border = "1";
+  table.classList.add("border-collapse", "border", "border-black", "w-full");
+
+  //const headers = ["Brinco", "Tipo", "Último Parto", "Fase", "Data Cobertura", "Status", "Previsão Parto", "Data Secagem"];
+  const headers = ["Brinco", "Tipo", "U.Parto", "Fase", "D.Cobertura", "Status", "P.Parto", "D.Secagem"];
+
+  // Cria o cabeçalho
+  const thead = document.createElement("thead");
+  const trHead = document.createElement("tr");
+
+  headers.forEach(header => {
+    const th = document.createElement("th");
+    th.innerText = header;
+    th.classList.add("border", "border-black", "p-2", "text-center");
+	th.style.fontSize = "12px"; // Fonte menor
+    trHead.appendChild(th);
+  });
+  thead.appendChild(trHead);
+  table.appendChild(thead);
+
+  // Cria o corpo da tabela
+  const tbody = document.createElement("tbody");
+  vacas.forEach(vaca => {
+    const tr = document.createElement("tr");
+    Object.values(vaca).forEach(value => {
+      const td = document.createElement("td");
+      td.innerText = value;
+      td.classList.add("border", "border-black", "p-2", "text-center");
+	  td.style.fontSize = "12px"; // Fonte menor para o corpo
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+
+  document.getElementById("tabela-vacas").appendChild(table);
+}
+
+window.onload = gerarTabela;
+
+ 
     </script>
 </body>
 </html>
