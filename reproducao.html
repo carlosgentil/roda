@@ -38,12 +38,14 @@
             drawWedge(ctx, centerX, centerY, outerRadius, (110 * Math.PI) / 180, (187 * Math.PI) / 180, "yellow", outerRadius - innerRadius);
             drawWedge(ctx, centerX, centerY, outerRadius, (-30 * Math.PI) / 180, (110 * Math.PI) / 180, "blue", outerRadius - innerRadius);
             drawWedge(ctx, centerX, centerY, outerRadius, (-90 * Math.PI) / 180, (-30 * Math.PI) / 180, "green", outerRadius - innerRadius);
+			azul claro "#ADD8E6" azul escuro blue
+			verde claro #90EE90
 			*/
 
 			drawWedge(ctx, centerX, centerY, outerRadius, (90 * Math.PI) / 180, ((90+83) * Math.PI) / 180, "red", outerRadius - innerRadius);
             drawWedge(ctx, centerX, centerY, outerRadius, ((90+83) * Math.PI) / 180, ((90+83+77) * Math.PI) / 180, "yellow", outerRadius - innerRadius);
-            drawWedge(ctx, centerX, centerY, outerRadius, ((90+83+77) * Math.PI) / 180, ((90-60) * Math.PI) / 180, "blue", outerRadius - innerRadius);
-            drawWedge(ctx, centerX, centerY, outerRadius, ((90-60) * Math.PI) / 180, (90 * Math.PI) / 180, "green", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, ((90+83+77) * Math.PI) / 180, ((90-60) * Math.PI) / 180, "#4682B4", outerRadius - innerRadius);
+            drawWedge(ctx, centerX, centerY, outerRadius, ((90-60) * Math.PI) / 180, (90 * Math.PI) / 180, "#66CDAA", outerRadius - innerRadius);
 			}
  //Centralizar no meio do canvas
 
@@ -296,8 +298,8 @@ const vacas = [
 const cores = {
     "VacaLactacaoVazia": "red",
     "VacaLactacaoCoberta": "yellow",
-    "VacaLactacaoPrenhe": "blue",
-    "VacaSecaPrenhe": "green",
+    "VacaLactacaoPrenhe": "#4682B4",
+    "VacaSecaPrenhe": "#66CDAA",
     "NovilhaSecaPrenhe": "pink",
     "NovilhaSecaCoberta": "lightpink"
 };
@@ -316,7 +318,7 @@ function calcularAngulo(data) {
 //const centroY = canvas.height / 2;
 //const raioInicial = 180; // Raio inicial onde começam os círculos
 raioInicial=180; //Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
-const raioReducao = 4; // Quanto reduz o raio a cada tentativa circuloRaio (15) raioReducao (10)
+const raioReducao = 3; // Quanto reduz o raio a cada tentativa circuloRaio (15) raioReducao (10)
 const circuloRaio = 8; // Raio do círculo das vacas
 
 let vacasPosicionadas = [];
@@ -367,11 +369,10 @@ function getVacas(){
 			}
 			//const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
 			const [diaVaca,mesVaca,anoVaca] = dataPos.split("/").map(Number);
-			let anguloVaca=(mesVaca -1) * Math.PI / 6 + (diaVaca-1)* Math.PI / 180 + angleAdjust;
-			if (vaca.Brinco === "2204"){
-				alert(vaca.Fase )
-			}
-			grafVacas.push({brinco: vaca.Brinco, cor: cor,angle:anguloVaca,info: ""});
+			let anguloVaca= angleAdjust - (mesVaca ) * Math.PI / 6 + (diaVaca-1)* Math.PI / 180 ;//- angleAdjust;
+
+			let vacaInfo = `Brinco: ${vaca.Brinco}\nNome: ${vaca.Nome}\nTipo: ${vaca.Tipo}\nUparto: ${vaca.Uparto}\nBcria: ${vaca.Bcria}\nFase: ${vaca.Fase}\nDcorb: ${vaca.Dcorb}\nStatus: ${vaca.Status}\nPparto: ${vaca.Pparto}\nDsecagen: ${vaca.Dsecagen}\nObs: ${vaca.Obs}`;
+			grafVacas.push({brinco: vaca.Brinco, cor: cor,angle:anguloVaca,info: vacaInfo});
 		}
 	}
 	return grafVacas;
@@ -379,7 +380,7 @@ function getVacas(){
 
 function posicionarVacas(){
 	let infoVacas=getVacas();
-	let raioAtual = 150; // 0.92 * 180 - 15  circuloRaio (15) raioReducao (8)
+	let raioAtual = 157; // 0.92 * 180 - 15  circuloRaio (15) raioReducao (8)
 	let flag=1;
 	let vacasNaoPosicionadas = [];
 	let vacasOk=[];
@@ -395,7 +396,7 @@ function posicionarVacas(){
 
 				if (!verificaSobreposicao(x, y)) {
 					// Adiciona vaca ao array de posicionadas
-					vacasPosicionadas.push({ x, y, brinco: vaca.brinco, cor });
+					vacasPosicionadas.push({ x, y, brinco: vaca.brinco, cor ,info:vaca.info});
 					vacasOk.push(vaca.brinco);
 				}
 			}
@@ -422,6 +423,20 @@ function posicionarVacas(){
         ctx.fillText(v.brinco, v.x, v.y);
 
     }
+
+	canvas.addEventListener("click", (event) => {
+	  const rect = canvas.getBoundingClientRect();
+	  const mouseX = event.clientX - rect.left;
+	  const mouseY = event.clientY - rect.top;
+
+	  vacasPosicionadas.forEach((v) => {
+		const distancia = Math.sqrt((mouseX - v.x) ** 2 + (mouseY - v.y) ** 2);
+		if (distancia <= circuloRaio) {
+		  alert(`${v.info}`);
+		}
+	  });
+	});
+
 }
 
 // Chama a função para desenhar
