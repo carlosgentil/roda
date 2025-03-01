@@ -369,7 +369,7 @@ function getVacas(){
 			}
 			//const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
 			const [diaVaca,mesVaca,anoVaca] = dataPos.split("/").map(Number);
-			let anguloVaca= angleAdjust - (mesVaca ) * Math.PI / 6 + (diaVaca-1)* Math.PI / 180 ;//- angleAdjust;
+			let anguloVaca= angleAdjust - ((mesVaca  ) * Math.PI / 6 - (diaVaca-1)* Math.PI / 180) ;//- angleAdjust;
 
 			let vacaInfo = `Brinco: ${vaca.Brinco}\nNome: ${vaca.Nome}\nTipo: ${vaca.Tipo}\nUparto: ${vaca.Uparto}\nBcria: ${vaca.Bcria}\nFase: ${vaca.Fase}\nDcorb: ${vaca.Dcorb}\nStatus: ${vaca.Status}\nPparto: ${vaca.Pparto}\nDsecagen: ${vaca.Dsecagen}\nObs: ${vaca.Obs}`;
 			grafVacas.push({brinco: vaca.Brinco, cor: cor,angle:anguloVaca,info: vacaInfo});
