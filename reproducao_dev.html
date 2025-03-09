@@ -442,22 +442,28 @@ function posicionarVacas(){
 // Chama a função para desenhar
 posicionarVacas();
 function legendaVacas(){
-        x= -157; //centerX + raioAtual * Math.cos(angulo);
-	y= -100; //centerX + raioAtual * Math.cos(angulo);
-	// cores = {
-        // "VacaLactacaoVazia": "red",
-        ctx.beginPath();
-        ctx.arc(x, y, circuloRaio, 0, 2 * Math.PI);
-        ctx.fillStyle = "red";
-        ctx.fill();
-        //ctx.stroke();
+        x= 10; //centerX + raioAtual * Math.cos(angulo);
+	    y= 350; //centerX + raioAtual * Math.cos(angulo);
+		nl=0
+		for (const corkey in cores){
+			y1=y+nl
+		// cores = {
+			// "VacaLactacaoVazia": "red",
+			ctx.beginPath();
+			ctx.arc(x, y1, circuloRaio, 0, 2 * Math.PI);
+			ctx.fillStyle = cores[corkey];
+			ctx.fill();
+			//ctx.stroke();
 
-        ctx.fillStyle = "black";
-        ctx.font = "9px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("VacaLactacaoVazia", x, y);
+			ctx.fillStyle = "black";
+			ctx.font = "9px Arial";
+			ctx.textAlign = "left";
+			ctx.textBaseline = "middle";
+			ctx.fillText(corkey, x, y1);
+			nl=nl+17
+		}
 }
+legendaVacas();
 legendaVacas();
     </script>
 </body>
