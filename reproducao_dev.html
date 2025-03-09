@@ -441,6 +441,24 @@ function posicionarVacas(){
 
 // Chama a função para desenhar
 posicionarVacas();
+function legendaVacas(){
+        x= -157; //centerX + raioAtual * Math.cos(angulo);
+	y= -100; //centerX + raioAtual * Math.cos(angulo);
+	// cores = {
+        // "VacaLactacaoVazia": "red",
+        ctx.beginPath();
+        ctx.arc(x, y, circuloRaio, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        //ctx.stroke();
+
+        ctx.fillStyle = "black";
+        ctx.font = "9px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("VacaLactacaoVazia", x, y);
+}
+legendaVacas();
     </script>
 </body>
 </html>
