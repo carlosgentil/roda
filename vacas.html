@@ -9,6 +9,7 @@
 	<div id="tabela-vacas"></div>
 
     <script>
+let vacas;
 const sheetID = '1moDujeWipdWmRa3P3talND1qk1P2dvAD432gSvWmXbc';
 const sheetName = 'dados'; // Nome da aba
 const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
@@ -17,7 +18,7 @@ fetch(url)
   .then(response => response.json())
   .then(data => {
     console.log(data); // Veja os dados da planilha
-    const vacas = JSON.stringify(data, null, 2);
+    let vacas = JSON.stringify(data, null, 2);
   });	
 	const hoje = new Date();
 	const diaAtual = hoje.getDate(); // Dia atual (1-31)
