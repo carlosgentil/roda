@@ -1,0 +1,21 @@
+<html lang="pt">
+    <meta charset="UTF-8">
+    <meta name="viewport"content="width=device-width, initial-scale=1.0">
+    <title>Roda Reproducao</title>
+</head>
+<body>
+<script>
+const sheetID = '1moDujeWipdWmRa3P3talND1qk1P2dvAD432gSvWmXbc';
+const sheetName = 'Página1'; // Nome da aba
+const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+
+fetch(url)
+  .then(response => response.json())
+  .then(data => {
+    console.log(data); // Veja os dados da planilha
+    document.getElementById('conteudo').innerText = JSON.stringify(data, null, 2);
+  });
+</script>
+<pre id="conteudo"></pre>
+</body>
+</html>
