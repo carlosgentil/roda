@@ -5,7 +5,7 @@
 </head>
 <body>
 <script>
-    /*
+
 const sheetID = '1moDujeWipdWmRa3P3talND1qk1P2dvAD432gSvWmXbc';
 const sheetName = 'Página1'; // Nome da aba
 const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
@@ -14,9 +14,6 @@ fetch(url)
   .then(response => response.json())
   .then(data => {
     console.log(data); // Veja os dados da planilha
-    document.getElementById('conteudo').innerText = JSON.stringify(data, null, 2);
-  });
-   */ 
 const vacas = [
 {Brinco:"225", Nome:"",Tipo:"Vaca", Uparto:"06/04/2025",Bcria:"5041", Fase:"Lactacao", Dcorb:"", Status:"Vazia", Pparto:"", Dsecagen:"", Obs:" Pariu Bezerra Sindi "},
 {Brinco:"339", Nome:"Amarelona",Tipo:"Vaca", Uparto:"31/03/2025",Bcria:"5032", Fase:"Lactacao", Dcorb:"", Status:"Vazia", Pparto:"", Dsecagen:"", Obs:" Pariu Bezerra Nelore "},
@@ -46,7 +43,10 @@ const vacas = [
 {Brinco:"303", Nome:"",Tipo:"Novilha", Uparto:"",Bcria:"", Fase:"Seca", Dcorb:"15/11/2024", Status:"Prenhe", Pparto:"22/8/2025", Dsecagen:"", Obs:"  "},
 {Brinco:"2203", Nome:"",Tipo:"Novilha", Uparto:"",Bcria:"", Fase:"Seca", Dcorb:"15/12/2024", Status:"Prenhe", Pparto:"21/9/2025", Dsecagen:"", Obs:"  "},
 ];
-document.getElementById('conteudo').innerText = "TEST"; //JSON.stringify(vacas, null, 2);
+    document.getElementById('conteudo').innerText = JSON.stringify(data, null, 2);
+
+
+  }
 </script>
 <pre id="conteudo"></pre>
 </body>
