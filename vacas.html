@@ -17,8 +17,9 @@ const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
 fetch(url)
   .then(response => response.json())
   .then(data => {
-    console.log(data); // Veja os dados da planilha
-    vacas = JSON.parse( JSON.stringify(data, null, 2) );
+    //console.log(data); // Veja os dados da planilha
+    vacas = JSON.parse( "[" + JSON.stringify(data, null, 2) + "]");
+    console.log(vacas)
   });	
 	const hoje = new Date();
 	const diaAtual = hoje.getDate(); // Dia atual (1-31)
