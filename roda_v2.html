@@ -198,26 +198,36 @@
   const diaAtual = hoje.getDate();
   const mesAtual = hoje.getMonth() + 1;
 
-  // =================== CONFIG CANVAS ===================
+  // =================== CANVAS / RETINA ===================
   const canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
 
   let centerX, centerY, scale;
-  let modoDetalhado = false; // false = bolinha sem número, true = com número
+  let DPR = 1;
+  let modoDetalhado = false; // false = bolinha sem número
 
   function resizeCanvas() {
-    // canvas wrapper define o tamanho
+    // DPI real da tela (retina)
+    DPR = window.devicePixelRatio || 1;
+
     const wrapper = document.querySelector(".canvas-wrapper");
     const rect = wrapper.getBoundingClientRect();
 
-    // Canvas "real" em pixels
+    // tamanho "visual" (em CSS pixels)
     const size = Math.min(rect.width, rect.height);
-    canvas.width = size;
-    canvas.height = size;
 
-    centerX = canvas.width / 2;
-    centerY = canvas.height / 2;
-    scale = size * 0.4; // escala proporcional ao tamanho
+    // tamanho real do canvas (multiplicado pelo DPR)
+    canvas.style.width  = size + "px";
+    canvas.style.height = size + "px";
+    canvas.width  = size * DPR;
+    canvas.height = size * DPR;
+
+    // configura a matriz de transformação para desenhar em coordenadas CSS
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+    centerX = size / 2;
+    centerY = size / 2;
+    scale   = size * 0.4;  // raio base proporcional ao tamanho
 
     desenharTudo();
   }
@@ -285,7 +295,6 @@
   }
 
   function drawBaseGrid() {
-    // Círculos
     drawCircle(centerX, centerY, 0.92, "black", 2);
     drawCircle(centerX, centerY, 0.25, "black", 2);
     drawCircle(centerX, centerY, 0.15, "black", 2);
@@ -297,7 +306,6 @@
     const angleStep = (2 * Math.PI) / totalDivisions;
     const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
 
-    // Linhas radiais
     for (let i = 0; i < totalDivisions; i++) {
       const angle = i * angleStep + angleAdjust;
 
@@ -315,12 +323,14 @@
       }
     }
 
-    // Meses
     const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
     const monthAngles = 2 * Math.PI / 12;
 
+    let diaAtualA2 = diaAtual > 30 ? 30 : diaAtual;
+    const angleAdjust2 = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA2-1)* Math.PI / 180;
+
     for (let i = 0; i < months.length; i++) {
-      const angle = (months.length-i-1) * monthAngles + angleAdjust;
+      const angle = (months.length-i-1) * monthAngles + angleAdjust2;
 
       const x1 = centerX + 0.92 * scale * Math.cos(angle);
       const y1 = centerY + 0.92 * scale * Math.sin(angle);
@@ -339,7 +349,6 @@
       ctx.stroke();
     }
 
-    // Linhas marcadoras
     drawLine2(-90 * Math.PI / 180 , 0.95, 1.0, "black", 1.5);
     drawLine2(-60 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
     drawLine2(-30 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
@@ -350,7 +359,6 @@
     drawLine2( 120 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
     drawLine2( 150 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
 
-    // Textos especiais
     function drawMark(angleDeg, text1, text2, text3) {
       const angle = (angleDeg * Math.PI) / 180;
 
@@ -461,14 +469,12 @@
     document.getElementById("tabela-vacas").appendChild(table);
   }
 
-  // =================== POSICIONAMENTO DAS VACAS NA RODA ===================
+  // =================== POSICIONAMENTO DAS VACAS ===================
   const vacasPosicionadas = [];
-  const circlesData = []; // para click
+  const circlesData = [];
 
   function getVacas() {
-    const hojeTmp = new Date();
-    let diaAtualA = hojeTmp.getDate();
-    diaAtualA = diaAtualA > 30 ? 30 : diaAtualA;
+    let diaAtualA = diaAtual > 30 ? 30 : diaAtual;
     const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
 
     let grafVacas = [];
@@ -512,13 +518,12 @@
     circlesData.length = 0;
 
     const infoVacas = getVacas();
-    let raioAtual = 0.87 * scale; // próximo do círculo de 0.92 * scale
+
+    let raioAtual = 0.87 * scale;
     const raioMin = 0.4 * scale;
 
-    // Tamanho da bolinha conforme modo
-    const circuloRaioPx = modoDetalhado ? (canvas.width * 0.02) : (canvas.width * 0.012);
-
     const vacasOk = [];
+    const circuloRaioPx = modoDetalhado ? (canvas.width * 0.02 / DPR) : (canvas.width * 0.012 / DPR);
 
     while (raioAtual > raioMin) {
       for (let vaca of infoVacas) {
@@ -533,10 +538,9 @@
         }
       }
       if (vacasOk.length === infoVacas.length) break;
-      raioAtual -= (canvas.width * 0.02); // reduz o raio e tenta de novo
+      raioAtual -= (scale * 0.07);
     }
 
-    // Desenhar
     for (let v of vacasPosicionadas) {
       ctx.beginPath();
       ctx.arc(v.x, v.y, circuloRaioPx, 0, 2 * Math.PI);
@@ -545,7 +549,7 @@
 
       if (modoDetalhado) {
         ctx.fillStyle = "black";
-        ctx.font = `${Math.max(9, canvas.width * 0.02)}px Arial`;
+        ctx.font = `${Math.max(9, canvas.width * 0.02 / DPR)}px Arial`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(v.brinco, v.x, v.y);
@@ -613,7 +617,12 @@
 
   // =================== DESENHAR TUDO ===================
   function desenharTudo() {
+    // limpa o canvas em coordenadas físicas
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // volta para a escala por DPR
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
     drawDonutChart();
     drawBaseGrid();
     posicionarVacasEDesenhar();
