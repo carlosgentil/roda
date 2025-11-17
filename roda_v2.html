@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"content="width=device-width, initial-scale=1.0">
+    <title>Roda Reproducao</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f7f7f7;
+        }
+
+        .page {
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+            padding: 8px;
+            gap: 8px;
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-wheel {
+            flex: 0 0 420px;
+            max-width: 100%;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .panel-table {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .wheel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .wheel-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .wheel-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .toggle-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #f0f0f0;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .toggle-btn.active {
+            background: #007aff;
+            color: white;
+            border-color: #007aff;
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
+            margin: 0 auto;
+        }
+
+        #myCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .legend {
+            margin-top: 8px;
+            font-size: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid #333;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 4px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 750px;
+            font-size: 11px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 2px 4px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        thead {
+            background: #efefef;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .table-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .page {
+                flex-direction: column;
+            }
+
+            .panel-wheel {
+                flex: none;
+                width: 100%;
+            }
+
+            .panel-table {
+                flex: none;
+                max-height: 45vh;
+            }
+
+            .table-container {
+                max-height: 40vh;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <!-- Painel da roda -->
+    <div class="panel panel-wheel">
+        <div class="wheel-header">
+            <div class="wheel-title">Roda de Reprodução – Faz Estiva</div>
+            <div class="wheel-controls">
+                <span>Modo detalhado:</span>
+                <button id="toggleDetalhe" class="toggle-btn">OFF</button>
+            </div>
+        </div>
+        <div class="canvas-wrapper">
+            <canvas id="myCanvas"></canvas>
+        </div>
+        <div class="legend" id="legenda-vacas"></div>
+    </div>
+
+    <!-- Painel da tabela -->
+    <div class="panel panel-table">
+        <div class="table-title">Lista de vacas</div>
+        <div class="table-container">
+            <div id="tabela-vacas"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+  // =================== DATA ATUAL ===================
+  const hoje = new Date();
+  const diaAtual = hoje.getDate();
+  const mesAtual = hoje.getMonth() + 1;
+
+  // =================== CONFIG CANVAS ===================
+  const canvas = document.getElementById("myCanvas");
+  const ctx = canvas.getContext("2d");
+
+  let centerX, centerY, scale;
+  let modoDetalhado = false; // false = bolinha sem número, true = com número
+
+  function resizeCanvas() {
+    // canvas wrapper define o tamanho
+    const wrapper = document.querySelector(".canvas-wrapper");
+    const rect = wrapper.getBoundingClientRect();
+
+    // Canvas "real" em pixels
+    const size = Math.min(rect.width, rect.height);
+    canvas.width = size;
+    canvas.height = size;
+
+    centerX = canvas.width / 2;
+    centerY = canvas.height / 2;
+    scale = size * 0.4; // escala proporcional ao tamanho
+
+    desenharTudo();
+  }
+
+  window.addEventListener("resize", resizeCanvas);
+
+  // =================== FUNÇÕES DE DESENHO BÁSICAS ===================
+  function drawWedge(ctx, centerX, centerY, outerRadius, startAngle, endAngle, color, width) {
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+      ctx.arc(centerX, centerY, outerRadius - width, endAngle, startAngle, true);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+  }
+
+  function drawCircle(x, y, radius, color, lineWidth) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius * scale, 0, 2 * Math.PI);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+
+  function drawLine(x1, y1, x2, y2, color, lineWidth) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+
+  function drawText(text, x, y, fontSize, fontWeight) {
+    ctx.font = `${fontWeight || "normal"} ${fontSize}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "black";
+    ctx.fillText(text, x, y);
+  }
+
+  function drawLine2(angle, length1, length2, color, lineWidth) {
+    const x1 = centerX + length1 * scale * Math.cos(angle);
+    const y1 = centerY + length1 * scale * Math.sin(angle);
+    const x2 = centerX + length2 * scale * Math.cos(angle);
+    const y2 = centerY + length2 * scale * Math.sin(angle);
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+
+  // =================== RODA BASE ===================
+  function drawDonutChart() {
+      const outerRadius = 0.9 * scale;
+      const innerRadius = outerRadius * 0.95;
+
+      drawWedge(ctx, centerX, centerY, outerRadius, (90 * Math.PI) / 180, ((90+83) * Math.PI) / 180, "red", outerRadius - innerRadius);
+      drawWedge(ctx, centerX, centerY, outerRadius, ((90+83) * Math.PI) / 180, ((90+83+77) * Math.PI) / 180, "yellow", outerRadius - innerRadius);
+      drawWedge(ctx, centerX, centerY, outerRadius, ((90+83+77) * Math.PI) / 180, ((90-60) * Math.PI) / 180, "#4682B4", outerRadius - innerRadius);
+      drawWedge(ctx, centerX, centerY, outerRadius, ((90-60) * Math.PI) / 180, (90 * Math.PI) / 180, "#66CDAA", outerRadius - innerRadius);
+  }
+
+  function drawBaseGrid() {
+    // Círculos
+    drawCircle(centerX, centerY, 0.92, "black", 2);
+    drawCircle(centerX, centerY, 0.25, "black", 2);
+    drawCircle(centerX, centerY, 0.15, "black", 2);
+    drawCircle(centerX, centerY, 0.945, "black", 2);
+    drawCircle(centerX, centerY, 1.0, "black", 2);
+
+    let diaAtualA = diaAtual > 30 ? 30 : diaAtual;
+    const totalDivisions = 72;
+    const angleStep = (2 * Math.PI) / totalDivisions;
+    const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
+
+    // Linhas radiais
+    for (let i = 0; i < totalDivisions; i++) {
+      const angle = i * angleStep + angleAdjust;
+
+      const x1 = centerX + 0.92 * scale * Math.cos(angle);
+      const y1 = centerY + 0.92 * scale * Math.sin(angle);
+      const x2 = centerX + 0.25 * scale * Math.cos(angle);
+      const y2 = centerY + 0.25 * scale * Math.sin(angle);
+      const x3 = centerX + 0.15 * scale * Math.cos(angle);
+      const y3 = centerY + 0.15 * scale * Math.sin(angle);
+
+      if (i % 6 === 0) {
+        drawLine(x1, y1, x3, y3, "black", 1.5);
+      } else {
+        drawLine(x1, y1, x2, y2, "gray", 0.5);
+      }
+    }
+
+    // Meses
+    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const monthAngles = 2 * Math.PI / 12;
+
+    for (let i = 0; i < months.length; i++) {
+      const angle = (months.length-i-1) * monthAngles + angleAdjust;
+
+      const x1 = centerX + 0.92 * scale * Math.cos(angle);
+      const y1 = centerY + 0.92 * scale * Math.sin(angle);
+      const x2 = centerX + 0.2 * scale * Math.cos(angle + monthAngles / 2);
+      const y2 = centerY + 0.2 * scale * Math.sin(angle + monthAngles / 2);
+      const x3 = centerX + 0.15 * scale * Math.cos(angle);
+      const y3 = centerY + 0.15 * scale * Math.sin(angle);
+
+      drawText(months[i], x2, y2, 9, "bold");
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x3, y3);
+      ctx.strokeStyle = "gray";
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    // Linhas marcadoras
+    drawLine2(-90 * Math.PI / 180 , 0.95, 1.0, "black", 1.5);
+    drawLine2(-60 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+    drawLine2(-30 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+    drawLine2( 0 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+    drawLine2( 30 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+    drawLine2( 60 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+    drawLine2( 90 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+    drawLine2( 120 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+    drawLine2( 150 * Math.PI / 180, 0.95, 1.0, "black", 1.5);
+
+    // Textos especiais
+    function drawMark(angleDeg, text1, text2, text3) {
+      const angle = (angleDeg * Math.PI) / 180;
+
+      drawLine2(angle, 0.95, 1.0, "black", 1.5);
+
+      if(text1 === "cobertura"){
+        drawText(text1, centerX + 1.14 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 12);
+        drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.46 * scale * Math.sin(angle), 12);
+      } else if(text1 === "retorno") {
+        drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.16 * scale * Math.sin(angle), 12);
+        drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.95 * scale * Math.sin(angle), 12);
+        drawText(text3, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.75 * scale * Math.sin(angle), 12);
+      } else if(text2 === "40 dias") {
+        drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.10 * scale * Math.sin(angle), 12);
+        drawText(text2, centerX + 1.16 * scale * Math.cos(angle), centerY + 0.97 * scale * Math.sin(angle), 12);
+      } else if(text2 === "60 dias") {
+        drawText(text1, centerX + 1.18 * scale * Math.cos(angle), centerY + 1.08 * scale * Math.sin(angle), 12);
+        drawText(text2, centerX + 1.26 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 12);
+      } else {
+        drawText(text1, centerX + 1.08 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 12);
+        if (text2) drawText(text2, centerX + 1.05 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 12);
+        if (text3) drawText(text3, centerX + 1.05 * scale * Math.cos(angle), centerY + 0.9 * scale * Math.sin(angle), 12);
+      }
+    }
+
+    drawMark(173, "cobertura", "83 dias", "");
+    drawMark(194, "retorno", "ao cio", "21 dias");
+    drawMark(213, "palpar", "40 dias", "");
+    drawMark(233, "palpar", "60 dias", "");
+
+    drawText("secar", centerX + 1.08 * scale * Math.cos(30 * Math.PI / 180), centerY + 1.06 * scale * Math.sin(30 * Math.PI / 180), 12);
+    drawText("Hoje", centerX, centerY + 1.05 * scale, 12, "bold");
+    drawText("Parição", centerX, centerY + 1.10 * scale, 12, "bold");
+
+    const months2 = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    drawText("Faz", centerX, centerY - 0.08 * scale, 14, "bold");
+    drawText("Estiva", centerX, centerY, 14, "bold");
+    drawText(diaAtual + "/ "+ months2[mesAtual-1], centerX, centerY + 0.08 * scale, 12, "bold");
+  }
+
+  // =================== DADOS DAS VACAS ===================
+  const vacas = [
+  { Brinco:"97", Nome:"Uberlandia", Tipo:"Vaca",  Uparto:"08/09/2025", Bcria:"5092",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
+  { Brinco:"306", Nome:"Negrinha", Tipo:"Vaca",  Uparto:"06/09/2025", Bcria:"5091",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"" },
+  { Brinco:"303", Nome:"", Tipo:"Vaca",  Uparto:"11/08/2025", Bcria:"5082",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
+  { Brinco:"342", Nome:"Moranga", Tipo:"Vaca",  Uparto:"10/08/2025", Bcria:"",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Bezerro nasceu morto" },
+  { Brinco:"25", Nome:"Vitoria", Tipo:"Vaca",  Uparto:"28/06/2025", Bcria:"5061",  Fase:"Lactacao",  Dcorb:"17/09/2025",  Status:"Coberta",  Pparto:"24/06/2026",  Dsecagen:"",  Obs:"Pariu femea filha Sindi\nInseminada 17/09/25" },
+  { Brinco:"225", Nome:"", Tipo:"Vaca",  Uparto:"06/04/2025", Bcria:"5041",  Fase:"Lactacao",  Dcorb:"17/09/2025",  Status:"Coberta",  Pparto:"24/06/2026",  Dsecagen:"",  Obs:"Pariu Bezerra Sindi\nInseminada 17/09/25" },
+  { Brinco:"339", Nome:"Amarelona", Tipo:"Vaca",  Uparto:"31/03/2025", Bcria:"5032",  Fase:"Lactacao",  Dcorb:"17/09/2025",  Status:"Coberta",  Pparto:"24/06/2026",  Dsecagen:"",  Obs:"Pariu Bezerra Nelore\nInseminada 17/09/25" },
+  { Brinco:"340", Nome:"Brancona", Tipo:"Vaca",  Uparto:"05/03/2025", Bcria:"5031",  Fase:"Lactacao",  Dcorb:"17/09/2025",  Status:"Coberta",  Pparto:"24/06/2026",  Dsecagen:"",  Obs:"Pariu Bezerro jersey\nInseminada 17/09/25" },
+  { Brinco:"210", Nome:"Fanta", Tipo:"Vaca",  Uparto:"05/11/2024", Bcria:"4111",  Fase:"Seca",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Abortou 20/06/25" },
+  { Brinco:"308", Nome:"Loteria", Tipo:"Vaca",  Uparto:"15/10/2024", Bcria:"4101",  Fase:"Lactacao",  Dcorb:"25/08/2025",  Status:"Coberta",  Pparto:"01/06/2026",  Dsecagen:"",  Obs:"Inseminada 05/05/25\nAbortou 28/07/25\nInseminada Marcos 25/08/2025" },
+  { Brinco:"228", Nome:"Bolinha", Tipo:"Vaca",  Uparto:"15/09/2024", Bcria:"4091",  Fase:"Lactacao",  Dcorb:"20/06/2025",  Status:"Prenhe",  Pparto:"29/03/2026",  Dsecagen:"",  Obs:"Inseminada 05/05/25\nInseminada 20/06/25" },
+  { Brinco:"230", Nome:"Boneca", Tipo:"Vaca",  Uparto:"15/08/2024", Bcria:"4081",  Fase:"Lactacao",  Dcorb:"05/05/2025",  Status:"Prenhe",  Pparto:"09/02/2026",  Dsecagen:"",  Obs:"Inseminada 05/05/25" },
+  { Brinco:"307", Nome:"Bela", Tipo:"Vaca",  Uparto:"01/08/2024", Bcria:"Ad-4112",  Fase:"Seca",  Dcorb:"05/05/2025",  Status:"Prenhe",  Pparto:"09/02/2026",  Dsecagen:"",  Obs:"Inseminada 05/05/25" },
+  { Brinco:"309", Nome:"Estrela", Tipo:"Vaca",  Uparto:"29/09/2025", Bcria:"5093",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
+  { Brinco:"235", Nome:"Chumbada", Tipo:"Vaca",  Uparto:"05/02/2024", Bcria:"4021",  Fase:"Lactacao",  Dcorb:"03/04/2025",  Status:"Prenhe",  Pparto:"08/01/2026",  Dsecagen:"",  Obs:"" },
+  { Brinco:"343", Nome:"Baroneza", Tipo:"Vaca",  Uparto:"05/02/2024", Bcria:"4022",  Fase:"Seca",  Dcorb:"27/01/2025",  Status:"Prenhe",  Pparto:"03/11/2025",  Dsecagen:"",  Obs:"" },
+  { Brinco:"305", Nome:"Torneira", Tipo:"Vaca",  Uparto:"26/12/2023", Bcria:"3122",  Fase:"Seca",  Dcorb:"05/05/2025",  Status:"Prenhe",  Pparto:"09/02/2026",  Dsecagen:"",  Obs:"Inseminada 05/05/25" },
+  { Brinco:"2204", Nome:"", Tipo:"Vaca",  Uparto:"11/10/2025", Bcria:"5101",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
+  { Brinco:"2203", Nome:"", Tipo:"Vaca",  Uparto:"15/10/2025", Bcria:"5102",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
+  { Brinco:"209", Nome:"Cachoeira", Tipo:"Vaca",  Uparto:"18/10/2025", Bcria:"5103",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Macho Sindi" },
+  { Brinco:"208", Nome:"", Tipo:"Vaca",  Uparto:"28/10/2025", Bcria:"5104",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Macho Sindi" },
+  { Brinco:"304", Nome:"", Tipo:"Novilha",  Uparto:"", Bcria:"",  Fase:"Seca",  Dcorb:"13/02/2025",  Status:"Prenhe",  Pparto:"20/11/2025",  Dsecagen:"",  Obs:"" },
+  { Brinco:"301", Nome:"", Tipo:"Novilha",  Uparto:"", Bcria:"",  Fase:"Seca",  Dcorb:"05/05/2025",  Status:"Prenhe",  Pparto:"09/02/2026",  Dsecagen:"",  Obs:"Inseminada 05/05/25" },
+  { Brinco:"2205", Nome:"", Tipo:"Novilha",  Uparto:"", Bcria:"",  Fase:"Seca",  Dcorb:"05/05/2025",  Status:"Prenhe",  Pparto:"09/02/2026",  Dsecagen:"",  Obs:"Inseminada 05/05/25" },
+  { Brinco:"302", Nome:"", Tipo:"Novilha",  Uparto:"", Bcria:"",  Fase:"Seca",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Inseminada 05/05/25\nDescarte" },
+  { Brinco:"341", Nome:"Plata", Tipo:"Vaca",  Uparto:"28/07/2024", Bcria:"4071",  Fase:"Seca",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Inseminada 27/6 Marcos Inseminada 05/05/25\nDescarte" },
+  { Brinco:"246", Nome:"Acai", Tipo:"Vaca",  Uparto:"12/12/2023", Bcria:"3121",  Fase:"Seca",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"45708",  Obs:"Morreu olho 3/7/25" }
+  ];
+
+  const cores = {
+    "VacaLactacaoVazia": "red",
+    "VacaLactacaoCoberta": "yellow",
+    "VacaLactacaoPrenhe": "#4682B4",
+    "VacaSecaPrenhe": "#66CDAA",
+    "NovilhaSecaPrenhe": "pink",
+    "NovilhaSecaCoberta": "#FFA07A"
+  };
+
+  // =================== TABELA ===================
+  function gerarTabela() {
+    const table = document.createElement("table");
+    const headers = ["Brinco", "Nome", "Tipo", "Ultimo Parto", "Brinco Cria","Fase", "Data Cobertura", "Status", "Previsão Parto", "Data Secagem","Observacao"];
+
+    const thead = document.createElement("thead");
+    const trHead = document.createElement("tr");
+    headers.forEach(header => {
+      const th = document.createElement("th");
+      th.innerText = header;
+      trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    vacas.forEach(vaca => {
+      const tr = document.createElement("tr");
+      Object.values(vaca).forEach(value => {
+        const td = document.createElement("td");
+        td.innerText = value;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+
+    document.getElementById("tabela-vacas").appendChild(table);
+  }
+
+  // =================== POSICIONAMENTO DAS VACAS NA RODA ===================
+  const vacasPosicionadas = [];
+  const circlesData = []; // para click
+
+  function getVacas() {
+    const hojeTmp = new Date();
+    let diaAtualA = hojeTmp.getDate();
+    diaAtualA = diaAtualA > 30 ? 30 : diaAtualA;
+    const angleAdjust = Math.PI / 2 + (mesAtual -1) * Math.PI / 6 + (diaAtualA-1)* Math.PI / 180;
+
+    let grafVacas = [];
+    for (let vaca of vacas) {
+      const categoria = `${vaca.Tipo}${vaca.Fase}${vaca.Status}`;
+      if (cores[categoria]) {
+        const cor = cores[categoria];
+        let dataPos;
+        if (vaca.Status === "Prenhe"|| vaca.Status === "Coberta") {
+          dataPos = vaca.Pparto;
+        } else {
+          dataPos = vaca.Uparto;
+        }
+        if (!dataPos) continue;
+
+        const [diaVaca,mesVaca,anoVaca] = dataPos.split("/").map(Number);
+        let anguloVaca = angleAdjust - ((mesVaca - 1) * Math.PI / 6 + (diaVaca-1)* Math.PI / 180);
+
+        let vacaInfo =
+          `Brinco: ${vaca.Brinco}\nNome: ${vaca.Nome}\nTipo: ${vaca.Tipo}\nUltimo parto: ${vaca.Uparto}\n` +
+          `Brinco cria: ${vaca.Bcria}\nFase: ${vaca.Fase}\nData cobertura: ${vaca.Dcorb}\nStatus: ${vaca.Status}\n` +
+          `Proximo parto: ${vaca.Pparto}\nData secagem: ${vaca.Dsecagen}\nObs: ${vaca.Obs}`;
+        grafVacas.push({brinco: vaca.Brinco, cor: cor, angle: anguloVaca, info: vacaInfo});
+      }
+    }
+    return grafVacas;
+  }
+
+  function verificaSobreposicao(x, y, raio) {
+    for (let v of vacasPosicionadas) {
+      let dx = x - v.x;
+      let dy = y - v.y;
+      let distancia = Math.sqrt(dx * dx + dy * dy);
+      if (distancia < raio * 2) return true;
+    }
+    return false;
+  }
+
+  function posicionarVacasEDesenhar() {
+    vacasPosicionadas.length = 0;
+    circlesData.length = 0;
+
+    const infoVacas = getVacas();
+    let raioAtual = 0.87 * scale; // próximo do círculo de 0.92 * scale
+    const raioMin = 0.4 * scale;
+
+    // Tamanho da bolinha conforme modo
+    const circuloRaioPx = modoDetalhado ? (canvas.width * 0.02) : (canvas.width * 0.012);
+
+    const vacasOk = [];
+
+    while (raioAtual > raioMin) {
+      for (let vaca of infoVacas) {
+        if (!vacasOk.includes(vaca.brinco)) {
+          const x = centerX + raioAtual * Math.cos(vaca.angle);
+          const y = centerY + raioAtual * Math.sin(vaca.angle);
+
+          if (!verificaSobreposicao(x, y, circuloRaioPx)) {
+            vacasPosicionadas.push({ x, y, brinco: vaca.brinco, cor: vaca.cor, info: vaca.info });
+            vacasOk.push(vaca.brinco);
+          }
+        }
+      }
+      if (vacasOk.length === infoVacas.length) break;
+      raioAtual -= (canvas.width * 0.02); // reduz o raio e tenta de novo
+    }
+
+    // Desenhar
+    for (let v of vacasPosicionadas) {
+      ctx.beginPath();
+      ctx.arc(v.x, v.y, circuloRaioPx, 0, 2 * Math.PI);
+      ctx.fillStyle = v.cor;
+      ctx.fill();
+
+      if (modoDetalhado) {
+        ctx.fillStyle = "black";
+        ctx.font = `${Math.max(9, canvas.width * 0.02)}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(v.brinco, v.x, v.y);
+      }
+
+      circlesData.push({
+        x: v.x,
+        y: v.y,
+        r: circuloRaioPx,
+        info: v.info
+      });
+    }
+  }
+
+  // =================== LEGENDA ===================
+  function legendaVacas() {
+    const legendDiv = document.getElementById("legenda-vacas");
+    legendDiv.innerHTML = "";
+
+    for (const corkey in cores) {
+      const item = document.createElement("div");
+      item.className = "legend-item";
+
+      const dot = document.createElement("div");
+      dot.className = "legend-dot";
+      dot.style.backgroundColor = cores[corkey];
+
+      const label = document.createElement("span");
+      label.textContent = corkey;
+
+      item.appendChild(dot);
+      item.appendChild(label);
+      legendDiv.appendChild(item);
+    }
+  }
+
+  // =================== CLICK NO CANVAS ===================
+  canvas.addEventListener("click", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    for (let c of circlesData) {
+      const distancia = Math.sqrt((mouseX - c.x) ** 2 + (mouseY - c.y) ** 2);
+      if (distancia <= c.r) {
+        alert(c.info);
+        break;
+      }
+    }
+  });
+
+  // =================== TOGGLE MODO DETALHADO ===================
+  const toggleBtn = document.getElementById("toggleDetalhe");
+  toggleBtn.addEventListener("click", () => {
+    modoDetalhado = !modoDetalhado;
+    if (modoDetalhado) {
+      toggleBtn.classList.add("active");
+      toggleBtn.textContent = "ON";
+    } else {
+      toggleBtn.classList.remove("active");
+      toggleBtn.textContent = "OFF";
+    }
+    desenharTudo();
+  });
+
+  // =================== DESENHAR TUDO ===================
+  function desenharTudo() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawDonutChart();
+    drawBaseGrid();
+    posicionarVacasEDesenhar();
+  }
+
+  // =================== INICIALIZAÇÃO ===================
+  window.onload = function() {
+    gerarTabela();
+    legendaVacas();
+    resizeCanvas();
+  };
+</script>
+</body>
+</html>
