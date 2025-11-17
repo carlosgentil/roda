@@ -204,11 +204,12 @@
 
   let centerX, centerY, scale;
   let DPR = 1;
+  const INTERNAL_SCALE = 2; // fator extra de resolução
   let modoDetalhado = false; // false = bolinha sem número
 
   function resizeCanvas() {
     // DPI real da tela (retina)
-    DPR = window.devicePixelRatio || 1;
+    DPR = (window.devicePixelRatio || 1) * INTERNAL_SCALE;
 
     const wrapper = document.querySelector(".canvas-wrapper");
     const rect = wrapper.getBoundingClientRect();
@@ -547,13 +548,15 @@
       ctx.fillStyle = v.cor;
       ctx.fill();
 
-      if (modoDetalhado) {
-        ctx.fillStyle = "black";
-        ctx.font = `${Math.max(9, canvas.width * 0.02 / DPR)}px Arial`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(v.brinco, v.x, v.y);
-      }
+    if (modoDetalhado) {
+      ctx.fillStyle = "black";
+      // fonte um pouco menor e ainda escalando com o tamanho do canvas
+      const fontPx = Math.max(7, canvas.width * 0.015 / DPR);
+      ctx.font = `${fontPx}px Arial`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(v.brinco, v.x, v.y);
+    }
 
       circlesData.push({
         x: v.x,
