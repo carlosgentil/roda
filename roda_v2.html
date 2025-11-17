@@ -286,7 +286,7 @@
 
   // =================== RODA BASE ===================
   function drawDonutChart() {
-      const outerRadius = 0.9 * scale;
+      const outerRadius = 0.9 * scale * 1.2;
       const innerRadius = outerRadius * 0.95;
 
       drawWedge(ctx, centerX, centerY, outerRadius, (90 * Math.PI) / 180, ((90+83) * Math.PI) / 180, "red", outerRadius - innerRadius);
@@ -402,7 +402,7 @@
 
   // =================== DADOS DAS VACAS ===================
   const vacas = [
-  { Brinco:"97", Nome:"Uberlandia", Tipo:"Vaca",  Uparto:"08/09/2025", Bcria:"5092",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
+  { Brinco:"97", Nome:"Uberlandia-", Tipo:"Vaca",  Uparto:"08/09/2025", Bcria:"5092",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
   { Brinco:"306", Nome:"Negrinha", Tipo:"Vaca",  Uparto:"06/09/2025", Bcria:"5091",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"" },
   { Brinco:"303", Nome:"", Tipo:"Vaca",  Uparto:"11/08/2025", Bcria:"5082",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Femea sindi" },
   { Brinco:"342", Nome:"Moranga", Tipo:"Vaca",  Uparto:"10/08/2025", Bcria:"",  Fase:"Lactacao",  Dcorb:"",  Status:"Vazia",  Pparto:"",  Dsecagen:"",  Obs:"Bezerro nasceu morto" },
