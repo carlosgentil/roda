@@ -366,22 +366,22 @@
       drawLine2(angle, 0.95, 1.0, "black", 1.5);
 
       if(text1 === "cobertura"){
-        drawText(text1, centerX + 1.14 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 9);
-        drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.46 * scale * Math.sin(angle), 9);
+        drawText(text1, centerX + 1.14 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 7);
+        drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.46 * scale * Math.sin(angle), 7);
       } else if(text1 === "retorno") {
-        drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.16 * scale * Math.sin(angle), 9);
-        drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.95 * scale * Math.sin(angle), 9);
-        drawText(text3, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.75 * scale * Math.sin(angle), 9);
+        drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.16 * scale * Math.sin(angle), 7);
+        drawText(text2, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.95 * scale * Math.sin(angle), 7);
+        drawText(text3, centerX + 1.12 * scale * Math.cos(angle), centerY + 0.75 * scale * Math.sin(angle), 7);
       } else if(text2 === "40 dias") {
-        drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.10 * scale * Math.sin(angle), 9);
-        drawText(text2, centerX + 1.16 * scale * Math.cos(angle), centerY + 0.97 * scale * Math.sin(angle), 9);
+        drawText(text1, centerX + 1.12 * scale * Math.cos(angle), centerY + 1.10 * scale * Math.sin(angle), 7);
+        drawText(text2, centerX + 1.16 * scale * Math.cos(angle), centerY + 0.97 * scale * Math.sin(angle), 7);
       } else if(text2 === "60 dias") {
-        drawText(text1, centerX + 1.18 * scale * Math.cos(angle), centerY + 1.08 * scale * Math.sin(angle), 9);
-        drawText(text2, centerX + 1.26 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 9);
+        drawText(text1, centerX + 1.18 * scale * Math.cos(angle), centerY + 1.08 * scale * Math.sin(angle), 7);
+        drawText(text2, centerX + 1.26 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 7);
       } else {
-        drawText(text1, centerX + 1.08 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 9);
-        if (text2) drawText(text2, centerX + 1.05 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 9);
-        if (text3) drawText(text3, centerX + 1.05 * scale * Math.cos(angle), centerY + 0.9 * scale * Math.sin(angle), 9);
+        drawText(text1, centerX + 1.08 * scale * Math.cos(angle), centerY + 1.06 * scale * Math.sin(angle), 7);
+        if (text2) drawText(text2, centerX + 1.05 * scale * Math.cos(angle), centerY + 1.00 * scale * Math.sin(angle), 7);
+        if (text3) drawText(text3, centerX + 1.05 * scale * Math.cos(angle), centerY + 0.9 * scale * Math.sin(angle), 7);
       }
     }
 
@@ -390,9 +390,9 @@
     drawMark(213, "palpar", "40 dias", "");
     drawMark(233, "palpar", "60 dias", "");
 
-    drawText("secar", centerX + 1.08 * scale * Math.cos(30 * Math.PI / 180), centerY + 1.06 * scale * Math.sin(30 * Math.PI / 180), 9);
-    drawText("Hoje", centerX, centerY + 1.05 * scale, 9, "bold");
-    drawText("Parição", centerX, centerY + 1.10 * scale, 9, "bold");
+    drawText("secar", centerX + 1.08 * scale * Math.cos(30 * Math.PI / 180), centerY + 1.06 * scale * Math.sin(30 * Math.PI / 180), 7);
+    drawText("Hoje", centerX, centerY + 1.05 * scale, 7, "bold");
+    drawText("Parição", centerX, centerY + 1.10 * scale, 7, "bold");
 
     const months2 = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
     drawText("Faz", centerX, centerY - 0.08 * scale, 9, "bold");
