@@ -172,10 +172,12 @@
     <div class="panel panel-wheel">
         <div class="wheel-header">
             <div class="wheel-title">Roda de Reprodução – Faz Estiva</div>
+            <!--
             <div class="wheel-controls">
                 <span>Modo detalhado:</span>
                 <button id="toggleDetalhe" class="toggle-btn">OFF</button>
             </div>
+            -->
         </div>
         <div class="canvas-wrapper">
             <canvas id="myCanvas"></canvas>
@@ -205,7 +207,7 @@
   let centerX, centerY, scale;
   let DPR = 1;
   const INTERNAL_SCALE = 3; // fator extra de resolução
-  let modoDetalhado = false; // false = bolinha sem número
+  let modoDetalhado = true; // false = bolinha sem número
 
   function resizeCanvas() {
     // DPI real da tela (retina)
@@ -605,6 +607,7 @@
   });
 
   // =================== TOGGLE MODO DETALHADO ===================
+  /**  
   const toggleBtn = document.getElementById("toggleDetalhe");
   toggleBtn.addEventListener("click", () => {
     modoDetalhado = !modoDetalhado;
@@ -617,7 +620,7 @@
     }
     desenharTudo();
   });
-
+  **/
   // =================== DESENHAR TUDO ===================
   function desenharTudo() {
     // limpa o canvas em coordenadas físicas
