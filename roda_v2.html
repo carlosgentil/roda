@@ -509,7 +509,7 @@
       let dx = x - v.x;
       let dy = y - v.y;
       let distancia = Math.sqrt(dx * dx + dy * dy);
-      if (distancia < raio * 2) return true;
+      if (distancia < (raio * 2 + 0.0005 * scale)) return true;
     }
     return false;
   }
