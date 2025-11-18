@@ -524,7 +524,7 @@
     const raioMin = 0.4 * scale;
 
     const vacasOk = [];
-    const circuloRaioPx = modoDetalhado ? (canvas.width * 0.012 / DPR) : (canvas.width * 0.012 / DPR);
+    const circuloRaioPx = modoDetalhado ? (canvas.width * 0.01 / DPR) : (canvas.width * 0.01 / DPR);
 
     while (raioAtual > raioMin) {
       for (let vaca of infoVacas) {
@@ -539,7 +539,7 @@
         }
       }
       if (vacasOk.length === infoVacas.length) break;
-      raioAtual -= (scale * 0.01);
+      raioAtual -= (scale * 0.0005);
     }
 
     for (let v of vacasPosicionadas) {
